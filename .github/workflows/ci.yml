@@ -10,23 +10,10 @@ permissions:
   contents: read
   actions: write
 
-# Reusable step: install Linux graphics/audio headers required by Ebitengine v2
-# (opengl/glfw driver on Linux uses CGO and needs these headers to compile)
-env:
-  EBITEN_LINUX_DEPS: >-
-    libgl1-mesa-dev
-    libx11-dev
-    libxcursor-dev
-    libxi-dev
-    libxinerama-dev
-    libxrandr-dev
-    libxxf86vm-dev
-    libasound2-dev
-
 jobs:
-  # ── Job 1: Unit Tests ────────────────────────────────────────────────────
-  test:
-    name: Unit Tests
+  # ── Job 1: Pure-Go Tests (no X11 / GPU needed) ──────────────────────────
+  test-pure:
+    name: Pure-Go Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,25 +23,18 @@ jobs:
           go-version: '1.25'
           cache: true
 
-      - name: Install Ebitengine Linux dependencies
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends ${{ env.EBITEN_LINUX_DEPS }}
-
-      - name: Run tests
+      - name: Test pure-Go packages
         run: |
           go test \
             ./internal/compiler/ \
             ./internal/history/ \
-            ./internal/ecs/ \
-            ./internal/engine/ \
+            ./internal/headless/ \
             -v -count=1
 
-  # ── Job 2: Headless Script Validation ───────────────────────────────────
-  validate-script:
-    name: Headless Script Validation
+  # ── Job 2: Ebiten Tests (needs X11 via Xvfb + software GL) ──────────────
+  test-ebiten:
+    name: Ebiten Tests (Xvfb)
     runs-on: ubuntu-latest
-    needs: test
     steps:
       - uses: actions/checkout@v4
 
@@ -66,21 +46,43 @@ jobs:
       - name: Install Ebitengine Linux dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends ${{ env.EBITEN_LINUX_DEPS }}
+          sudo apt-get install -y --no-install-recommends \
+            libgl1-mesa-dev libgl1-mesa-dri \
+            libx11-dev libxcursor-dev libxi-dev \
+            libxinerama-dev libxrandr-dev libxxf86vm-dev \
+            libasound2-dev xvfb
 
-      - name: Build headless Linux binary
-        run: go build -o gvn-engine-headless ./cmd/game
+      - name: Test ebiten packages (virtual display + software GL)
+        run: xvfb-run -a go test ./internal/ecs/ ./internal/engine/ -v -count=1
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          MESA_GL_VERSION_OVERRIDE: "3.3"
 
-      - name: Validate demo script (headless)
-        run: ./gvn-engine-headless -headless -script scripts/demo.json
+  # ── Job 3: Headless Script Validation (no X11 needed) ───────────────────
+  validate-script:
+    name: Headless Script Validation
+    runs-on: ubuntu-latest
+    needs: test-pure
+    steps:
+      - uses: actions/checkout@v4
 
-  # ── Job 3: Cross-compile Windows .exe ───────────────────────────────────
-  # Cross-compilation to Windows uses CGO_ENABLED=0 which skips all Linux-
-  # specific CGO code, so no X11/GL headers are needed here.
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+
+      # cmd/headless imports only gvn-engine (embed) + internal/headless — no ebiten
+      - name: Build headless validator
+        run: CGO_ENABLED=0 go build -o gvn-headless ./cmd/headless
+
+      - name: Validate demo script
+        run: ./gvn-headless -script scripts/demo.json
+
+  # ── Job 4: Cross-compile Windows .exe ───────────────────────────────────
   build-windows:
     name: Build Windows .exe
     runs-on: ubuntu-latest
-    needs: test
+    needs: test-pure
     steps:
       - uses: actions/checkout@v4
 
@@ -101,26 +103,15 @@ jobs:
           path: gvn-engine.exe
           retention-days: 30
 
-  # ── Job 4: Android APK (requires ebitenmobile + Android NDK) ────────────
-  # Runs on a self-hosted runner with Android SDK/NDK pre-installed.
-  # To enable: uncomment and add a runner tagged "android".
-  #
+  # ── Job 5: Android APK (self-hosted runner, opt-in) ──────────────────────
   # build-android:
-  #   name: Build Android APK
   #   runs-on: [self-hosted, android]
-  #   needs: test
+  #   needs: test-pure
   #   steps:
   #     - uses: actions/checkout@v4
   #     - uses: actions/setup-go@v5
-  #       with:
-  #         go-version: '1.25'
-  #     - name: Install ebitenmobile
-  #       run: go install github.com/hajimehoshi/ebiten/v2/cmd/ebitenmobile@latest
-  #     - name: Build APK
-  #       run: make android
-  #     - name: Upload APK
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: gvn-engine-android
-  #         path: "*.apk"
-  #         retention-days: 30
+  #       with: { go-version: '1.25' }
+  #     - run: go install github.com/hajimehoshi/ebiten/v2/cmd/ebitenmobile@latest
+  #     - run: make android
+  #     - uses: actions/upload-artifact@v4
+  #       with: { name: gvn-engine-android, path: "*.apk" }

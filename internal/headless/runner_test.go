@@ -1,11 +1,10 @@
-package engine
+package headless
 
 import (
 	"strings"
 	"testing"
 )
 
-// sampleJSON is a minimal script covering all command types.
 const sampleJSON = `{
   "title": "Headless Test",
   "commands": [
@@ -38,12 +37,11 @@ const sampleNVN = `
 [Alice] "You chose."
 `
 
-func TestRunHeadlessJSON(t *testing.T) {
-	res, err := RunHeadlessJSON("test.json", []byte(sampleJSON))
+func TestRunJSON(t *testing.T) {
+	res, err := RunJSON("test.json", []byte(sampleJSON))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-
 	if res.DialogCount != 3 {
 		t.Errorf("dialogs: want 3, got %d", res.DialogCount)
 	}
@@ -58,12 +56,11 @@ func TestRunHeadlessJSON(t *testing.T) {
 	}
 }
 
-func TestRunHeadlessNVN(t *testing.T) {
-	res, err := RunHeadlessNVN("test.nvn", sampleNVN)
+func TestRunNVN(t *testing.T) {
+	res, err := RunNVN("test.nvn", sampleNVN)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-
 	if res.DialogCount != 3 {
 		t.Errorf("dialogs: want 3, got %d", res.DialogCount)
 	}
@@ -73,39 +70,34 @@ func TestRunHeadlessNVN(t *testing.T) {
 	if res.LabelCount != 2 {
 		t.Errorf("labels: want 2, got %d", res.LabelCount)
 	}
-	if res.SystemCount != 2 { // @bg + @bgm
+	if res.SystemCount != 2 {
 		t.Errorf("system nodes: want 2, got %d", res.SystemCount)
 	}
 }
 
-func TestRunHeadlessAuto_JSON(t *testing.T) {
-	res, err := RunHeadlessAuto("demo.json", []byte(sampleJSON))
+func TestRunAuto_JSON(t *testing.T) {
+	res, err := RunAuto("demo.json", []byte(sampleJSON))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if res.DialogCount == 0 {
-		t.Error("expected at least 1 dialog from auto-dispatch JSON")
+		t.Error("expected at least 1 dialog")
 	}
 }
 
-func TestRunHeadlessAuto_NVN(t *testing.T) {
-	res, err := RunHeadlessAuto("demo.nvn", []byte(sampleNVN))
+func TestRunAuto_NVN(t *testing.T) {
+	res, err := RunAuto("demo.nvn", []byte(sampleNVN))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if res.DialogCount == 0 {
-		t.Error("expected at least 1 dialog from auto-dispatch NVN")
+		t.Error("expected at least 1 dialog")
 	}
 }
 
-func TestRunHeadlessJSON_MissingLabel(t *testing.T) {
-	badJSON := `{
-  "title":"Bad",
-  "commands":[
-    {"type":"jump","args":{"target":"nonexistent"}}
-  ]
-}`
-	res, err := RunHeadlessJSON("bad.json", []byte(badJSON))
+func TestRunJSON_MissingLabel(t *testing.T) {
+	bad := `{"title":"Bad","commands":[{"type":"jump","args":{"target":"nonexistent"}}]}`
+	res, err := RunJSON("bad.json", []byte(bad))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -116,24 +108,14 @@ func TestRunHeadlessJSON_MissingLabel(t *testing.T) {
 		}
 	}
 	if !found {
-		t.Errorf("expected warning about missing label 'nonexistent', got: %v", res.Warnings)
+		t.Errorf("expected warning about missing label, got: %v", res.Warnings)
 	}
 }
 
-func TestHeadlessResultString(t *testing.T) {
-	res := &HeadlessResult{
-		ScriptName:  "demo.json",
-		TotalNodes:  10,
-		DialogCount: 5,
-		ChoiceCount: 2,
-		LabelCount:  1,
-		SystemCount: 2,
-	}
+func TestResultString(t *testing.T) {
+	res := &Result{ScriptName: "demo.json", TotalNodes: 10, DialogCount: 5}
 	s := res.String()
-	if !strings.Contains(s, "demo.json") {
-		t.Error("String() should contain script name")
-	}
-	if !strings.Contains(s, "dialogs=5") {
-		t.Error("String() should contain dialog count")
+	if !strings.Contains(s, "demo.json") || !strings.Contains(s, "dialogs=5") {
+		t.Errorf("String() output unexpected: %s", s)
 	}
 }
