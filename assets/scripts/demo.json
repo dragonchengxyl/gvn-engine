@@ -1,0 +1,106 @@
+{
+  "title": "Demo Scene - P0 Features",
+  "commands": [
+    {
+      "type": "bg",
+      "args": { "file": "park.png" },
+      "duration": 0.5
+    },
+    {
+      "type": "char",
+      "args": { "name": "sakura", "file": "sakura_normal.png", "position": "center" }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "Sakura", "content": "Hello![w] Welcome to <color=cyan>GVN-Engine</color>." }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "Sakura", "content": "Now supporting <size=40>BIG TEXT</size> and <size=20>small text</size>!" }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "Sakura", "content": "Let's test the foreground effect. [w]Rain incoming!" }
+    },
+    {
+      "type": "fg",
+      "args": { "file": "rain.png", "alpha": "0.5" }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "", "content": "You can save with [F5] and load with [F9] now." }
+    },
+    {
+      "type": "fg",
+      "args": { "file": "clear" }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "Sakura", "content": "This engine supports <color=red>colored text</color>, <color=yellow>multiple colors</color>, and [w]pauses." }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "", "content": "Press [A] for Auto Mode, [S] for Skip Mode." }
+    },
+    {
+      "type": "choice",
+      "args": {
+        "prompt": "What path will you take?",
+        "option_1": "The brave path",
+        "jump_1": "brave",
+        "set_key_1": "path",
+        "set_val_1": "brave",
+        "option_2": "The wise path",
+        "jump_2": "wise",
+        "set_key_2": "path",
+        "set_val_2": "wise"
+      }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "", "content": "You chose the <color=red>brave</color> path! Courage fills your heart." },
+      "next": "brave"
+    },
+    {
+      "type": "jump",
+      "args": { "target": "after_choice" }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "", "content": "You chose the <color=blue>wise</color> path. Knowledge is power." },
+      "next": "wise"
+    },
+    {
+      "type": "jump",
+      "args": { "target": "after_choice" }
+    },
+    {
+      "type": "if",
+      "args": { "key": "path", "value": "brave", "jump": "brave_ending", "else": "wise_ending" },
+      "next": "after_choice"
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "Sakura", "content": "<color=orange>Your bravery</color> has led to a great adventure!" },
+      "next": "brave_ending"
+    },
+    {
+      "type": "jump",
+      "args": { "target": "ending" }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "Sakura", "content": "<color=cyan>Your wisdom</color> has unlocked hidden knowledge!" },
+      "next": "wise_ending"
+    },
+    {
+      "type": "jump",
+      "args": { "target": "ending" }
+    },
+    {
+      "type": "text",
+      "args": { "speaker": "", "content": "[End of P0 demo. All features working!]" },
+      "next": "ending"
+    }
+  ]
+}
