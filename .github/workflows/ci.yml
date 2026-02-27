@@ -4,12 +4,23 @@ on:
   push:
     branches: [main, develop]
   pull_request:
-  workflow_dispatch:  # 允许在 GitHub Actions 页面手动点击触发
+  workflow_dispatch:
 
-# Grant write access for artifact uploads (needed for Dependabot PRs too)
 permissions:
   contents: read
   actions: write
+
+# Reusable step: install Linux graphics/audio headers required by Ebitengine v2
+# (opengl/glfw driver on Linux uses CGO and needs these headers to compile)
+env:
+  EBITEN_LINUX_DEPS: >-
+    libgl1-mesa-dev
+    libx11-dev
+    libxcursor-dev
+    libxi-dev
+    libxinerama-dev
+    libxrandr-dev
+    libasound2-dev
 
 jobs:
   # ── Job 1: Unit Tests ────────────────────────────────────────────────────
@@ -21,16 +32,17 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          # Use major.minor only — patch version in go.mod may not exist as a
-          # standalone toolchain download on the runner.
           go-version: '1.25'
           cache: true
 
-      # ebiten's purego mode compiles without X11 headers when CGO is disabled.
-      # Our test packages never call ebiten at runtime, so this is safe.
-      - name: Run tests (CGO_ENABLED=0 avoids X11 dep on Ubuntu runners)
+      - name: Install Ebitengine Linux dependencies
         run: |
-          CGO_ENABLED=0 go test \
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ${{ env.EBITEN_LINUX_DEPS }}
+
+      - name: Run tests
+        run: |
+          go test \
             ./internal/compiler/ \
             ./internal/history/ \
             ./internal/ecs/ \
@@ -50,17 +62,20 @@ jobs:
           go-version: '1.25'
           cache: true
 
-      # CGO_ENABLED=0 → uses ebiten purego mode; no X11 needed at runtime
-      # because headless mode skips ebiten.RunGame entirely.
-      - name: Build headless Linux binary
+      - name: Install Ebitengine Linux dependencies
         run: |
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-          go build -o gvn-engine-headless ./cmd/game
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ${{ env.EBITEN_LINUX_DEPS }}
+
+      - name: Build headless Linux binary
+        run: go build -o gvn-engine-headless ./cmd/game
 
       - name: Validate demo script (headless)
         run: ./gvn-engine-headless -headless -script scripts/demo.json
 
   # ── Job 3: Cross-compile Windows .exe ───────────────────────────────────
+  # Cross-compilation to Windows uses CGO_ENABLED=0 which skips all Linux-
+  # specific CGO code, so no X11/GL headers are needed here.
   build-windows:
     name: Build Windows .exe
     runs-on: ubuntu-latest
@@ -86,8 +101,8 @@ jobs:
           retention-days: 30
 
   # ── Job 4: Android APK (requires ebitenmobile + Android NDK) ────────────
-  # This job runs on a self-hosted runner with Android SDK/NDK pre-installed.
-  # To enable: uncomment and configure a self-hosted runner tagged "android".
+  # Runs on a self-hosted runner with Android SDK/NDK pre-installed.
+  # To enable: uncomment and add a runner tagged "android".
   #
   # build-android:
   #   name: Build Android APK
