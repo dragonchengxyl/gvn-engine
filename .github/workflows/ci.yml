@@ -5,6 +5,11 @@ on:
     branches: [main, develop]
   pull_request:
 
+# Grant write access for artifact uploads (needed for Dependabot PRs too)
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   # ── Job 1: Unit Tests ────────────────────────────────────────────────────
   test:
@@ -15,12 +20,16 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          # Use major.minor only — patch version in go.mod may not exist as a
+          # standalone toolchain download on the runner.
+          go-version: '1.25'
           cache: true
 
-      - name: Run pure-Go tests
+      # ebiten's purego mode compiles without X11 headers when CGO is disabled.
+      # Our test packages never call ebiten at runtime, so this is safe.
+      - name: Run tests (CGO_ENABLED=0 avoids X11 dep on Ubuntu runners)
         run: |
-          go test \
+          CGO_ENABLED=0 go test \
             ./internal/compiler/ \
             ./internal/history/ \
             ./internal/ecs/ \
@@ -37,12 +46,14 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: '1.25'
           cache: true
 
+      # CGO_ENABLED=0 → uses ebiten purego mode; no X11 needed at runtime
+      # because headless mode skips ebiten.RunGame entirely.
       - name: Build headless Linux binary
         run: |
-          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
           go build -o gvn-engine-headless ./cmd/game
 
       - name: Validate demo script (headless)
@@ -58,12 +69,12 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version: '1.25'
           cache: true
 
       - name: Cross-compile Windows .exe
         run: |
-          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 \
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
           go build -ldflags="-s -w" -o gvn-engine.exe ./cmd/game
 
       - name: Upload Windows artifact
@@ -85,7 +96,7 @@ jobs:
   #     - uses: actions/checkout@v4
   #     - uses: actions/setup-go@v5
   #       with:
-  #         go-version-file: go.mod
+  #         go-version: '1.25'
   #     - name: Install ebitenmobile
   #       run: go install github.com/hajimehoshi/ebiten/v2/cmd/ebitenmobile@latest
   #     - name: Build APK
