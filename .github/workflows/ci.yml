@@ -20,6 +20,7 @@ env:
     libxi-dev
     libxinerama-dev
     libxrandr-dev
+    libxxf86vm-dev
     libasound2-dev
 
 jobs:
