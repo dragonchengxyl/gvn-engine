@@ -230,19 +230,19 @@ func (g *Game) Update() error {
 		g.updateTyping()
 	case StateWaitInput:
 		if g.Input.JustPressed() {
-			g.Ctx.Advance()
+			g.advanceLine()
 			g.State = StateIdle
 			g.waitTicks = 0
 		} else if g.Ctx.SkipMode {
 			// Skip: advance immediately
-			g.Ctx.Advance()
+			g.advanceLine()
 			g.State = StateIdle
 			g.waitTicks = 0
 		} else if g.Ctx.AutoMode {
 			// Auto: advance after delay
 			g.waitTicks++
 			if g.waitTicks >= g.Ctx.AutoDelay {
-				g.Ctx.Advance()
+				g.advanceLine()
 				g.State = StateIdle
 				g.waitTicks = 0
 			}
@@ -265,9 +265,9 @@ func (g *Game) Update() error {
 				}
 				g.Choices.Hide()
 				if chosen.Label != "" {
-					g.Ctx.JumpTo(g.Script, chosen.Label)
+					g.jumpLine(chosen.Label)
 				} else {
-					g.Ctx.Advance()
+					g.advanceLine()
 				}
 				g.State = StateIdle
 			}
@@ -337,7 +337,7 @@ func (g *Game) executeNextCommand() {
 			img := g.Assets.LoadImage("images/" + file)
 			g.Renderer.SetBackground(img, cmd.Duration)
 		}
-		g.Ctx.Advance()
+		g.advanceLine()
 		if cmd.Duration > 0 {
 			g.State = StateTransition
 		}
@@ -356,7 +356,7 @@ func (g *Game) executeNextCommand() {
 				g.spawnCharFade(name, img, fadeSec)
 			}
 		}
-		g.Ctx.Advance()
+		g.advanceLine()
 
 	case script.CmdText:
 		speaker := cmd.Args["speaker"]
@@ -393,7 +393,7 @@ func (g *Game) executeNextCommand() {
 		}
 		if len(choices) == 0 {
 			log.Printf("[WARN] engine: choice command has no options, skipping")
-			g.Ctx.Advance()
+			g.advanceLine()
 		} else {
 			g.activeChoices = choices
 			g.Choices.Show(choices)
@@ -409,7 +409,7 @@ func (g *Game) executeNextCommand() {
 		} else {
 			g.Audio.PlaySE("audio/" + file)
 		}
-		g.Ctx.Advance()
+		g.advanceLine()
 
 	case script.CmdWait:
 		g.State = StateWaitInput
@@ -421,7 +421,7 @@ func (g *Game) executeNextCommand() {
 			g.applyAction(&history.ActionSetVar{Key: k, NewValue: v})
 			log.Printf("[INFO] engine: set %q = %q", k, v)
 		}
-		g.Ctx.Advance()
+		g.advanceLine()
 
 	case script.CmdIf:
 		// Conditional jump: if args.key == args.value, jump to args.jump
@@ -431,15 +431,15 @@ func (g *Game) executeNextCommand() {
 		elseTarget := cmd.Args["else"]
 		if g.Ctx.Variables[k] == v {
 			if target != "" {
-				g.Ctx.JumpTo(g.Script, target)
+				g.jumpLine(target)
 			} else {
-				g.Ctx.Advance()
+				g.advanceLine()
 			}
 		} else {
 			if elseTarget != "" {
-				g.Ctx.JumpTo(g.Script, elseTarget)
+				g.jumpLine(elseTarget)
 			} else {
-				g.Ctx.Advance()
+				g.advanceLine()
 			}
 		}
 
@@ -447,9 +447,9 @@ func (g *Game) executeNextCommand() {
 		// Unconditional jump to label
 		target := cmd.Args["target"]
 		if target != "" {
-			g.Ctx.JumpTo(g.Script, target)
+			g.jumpLine(target)
 		} else {
-			g.Ctx.Advance()
+			g.advanceLine()
 		}
 
 	case script.CmdFG:
@@ -469,11 +469,11 @@ func (g *Game) executeNextCommand() {
 			img := g.Assets.LoadImage("images/" + file)
 			g.Renderer.SetForeground(img, alpha)
 		}
-		g.Ctx.Advance()
+		g.advanceLine()
 
 	default:
 		log.Printf("[WARN] engine: unhandled command type %q at line %d, skipping", cmd.Type, g.Ctx.LineIndex)
-		g.Ctx.Advance()
+		g.advanceLine()
 	}
 }
 
@@ -586,4 +586,22 @@ func parseFloat(s string) float64 {
 		return 0
 	}
 	return v
+}
+
+// advanceLine records a line advance through the history system.
+// Use this instead of g.Ctx.Advance() so history.state.LineIndex stays in sync.
+func (g *Game) advanceLine() {
+	g.applyAction(history.NewActionAdvanceLine(g.Ctx.LineIndex + 1))
+}
+
+// jumpLine records a label jump through the history system.
+// Falls back to advanceLine if the label is not found.
+func (g *Game) jumpLine(label string) {
+	idx := g.Script.FindLabel(label)
+	if idx < 0 {
+		log.Printf("[WARN] engine: jump label %q not found, advancing instead", label)
+		g.advanceLine()
+		return
+	}
+	g.applyAction(history.NewActionAdvanceLine(idx))
 }

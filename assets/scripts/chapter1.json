@@ -1,0 +1,100 @@
+{
+  "title": "残调·千禧罪罚 第一章：下沉",
+  "commands": [
+
+    {"type":"bg",    "args":{"file":"bg_piano_room.png"}, "duration":1.5},
+    {"type":"char",  "args":{"name":"leiye","file":"lei_ye_normal.png","position":"center"}},
+    {"type":"sound", "args":{"file":"","mode":"bgm"}},
+
+    {"type":"text",  "args":{"speaker":"",      "content":"2000年10月24日，22:05。\n老城区·新世纪培训中心·独立琴房。"}},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"2000年了。电视里每天都在播报千禧年的钟声，说这是一个充满希望的新时代。"}},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"但我的人生，好像卡在了某个重复的休止符里。"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"（他轻轻按下了一个最低音的琴键——）\n低沉的轰鸣在空荡的房间里回荡。"}},
+
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"五年前，我以为我能成为这座城市里最好的钢琴家。为了准备'肖邦国际钢琴比赛'选拔，我疯了一样地想要一台属于自己的斯坦威三角钢琴。"}},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"我没有抵押物。银行把我拒之门外。只有赖三那种游荡在灰色地带的鬣狗，愿意把钱借给一只'看起来很有前途'的老虎。"}},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"结果呢？我在选拔赛的舞台上，因为突发的惊恐障碍，连第一乐章都没弹完。那台斯坦威后来被低价抵押了出去。剩下的，只有从五万滚到二十万的高利贷。"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"（他慢慢合上琴盖，用绒布仔细擦拭掉上面的指纹。）\n（在这个狭小的空间里，他至少还是个老师。但只要推开那扇门，他就是这个城市的猎物。）"}},
+    {"type":"text",  "args":{"speaker":"",       "content":"钥匙转动锁眼的咔哒声。\n\n灯，灭了。"}},
+
+    {"type":"bg",    "args":{"file":"bg_rainy_street.png"}, "duration":1.2},
+    {"type":"char",  "args":{"name":"leiye","file":"lei_ye_frown.png","position":"center"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"暴雨倾盆。震耳欲聋的雨声，车轮碾过积水的撕裂声——\n\n文明世界的喧嚣，一下子砸在他身上。"}},
+    {"type":"text",  "args":{"speaker":"雷业",   "content":"末班公交车已经停了。打车……起步价要十块钱。\n可以买三天的挂面。"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"（他看了一眼脚下的廉价皮鞋。鞋底磨偏了，右脚边缘有些开胶。）\n（他迈开腿，踩进了水坑里。）\n\n——吧唧。吧唧。沉重的脚步声。"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"一辆桑塔纳出租车飞驰而过——\n\n【哗啦！】\n\n泥水准确无误地泼在了雷业的西装裤腿上。"}},
+
+    {"type":"char",  "args":{"name":"leiye","file":"lei_ye_angry.png","position":"center"}},
+    {"type":"text",  "args":{"speaker":"",       "content":"（透明雨伞下，那双虎目的瞳孔瞬间收缩成一条竖线。喉咙里发出了一声极其轻微的低吼。）"}},
+    {"type":"text",  "args":{"speaker":"雷业",   "content":"……"}},
+    {"type":"text",  "args":{"speaker":"",       "content":"（几秒钟后，他的瞳孔重新放大，恢复了那种逆来顺受的浑浊。他默默地掏出皱巴巴的面巾纸，擦了擦裤腿，继续往前走。）"}},
+
+    {"type":"char",  "args":{"name":"leiye","file":"lei_ye_normal.png","position":"center"}},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"愤怒是奢侈品。在这个城市里，只有银行卡里的数字，决定了你有没有资格露出獠牙。"}},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"我只是一只披着虎皮的丧家犬。"}},
+
+    {"type":"bg",    "args":{"file":"bg_music_store.png"}, "duration":1.0},
+    {"type":"char",  "args":{"name":"leiye","file":"lei_ye_fear.png","position":"center"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"路过一家打烊的音像店。橱窗里电视机还在播放无声的广告。\n\n就在这时——\n\n【滴滴滴！滴滴滴！】\n\n腰间的BP机突然发出尖锐的蜂鸣声。"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"━━━━━━━━━━━━━━━━━━━━━━━━━━━\n[21:50] 呼叫：雷大钢琴家。\n[内容]：今晚十二点前见不到钱，明天早上我就去市刑侦大队，给你那个当队长的亲弟弟送一面锦旗。写上'父债子还，哥债弟偿'。\n                                     ——赖三。\n━━━━━━━━━━━━━━━━━━━━━━━━━━━"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"轰——\n\n一声巨大的闷雷炸响。\n\n雷业靠在冰冷的玻璃橱窗上，大口大口地喘着粗气。雨水顺着他的虎须不断往下滴。"}},
+    {"type":"text",  "args":{"speaker":"雷业",   "content":"雷峰……不能去雷峰那里……"}},
+    {"type":"text",  "args":{"speaker":"雷业（自言自语）","content":"他会杀了我的……就算他不杀我，他看我的眼神也会杀了我。"}},
+    {"type":"text",  "args":{"speaker":"雷业（自言自语）","content":"他是个英雄，是全家的骄傲。如果让他知道，他哥哥借了黑道的高利贷……不行。绝对不行。"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"（他死死地攥着那个BP机，仿佛那是一块烙铁。\n他的理智，正在被一点点蒸发。）"}},
+
+    {"type":"choice","args":{
+      "prompt":    "面对岔路口，雷业该怎么办？",
+      "option_1":  "走主干道——有警察，但更安全",
+      "jump_1":    "choice_main_road",
+      "set_key_1": "path",
+      "set_val_1": "main_road",
+      "option_2":  "走地下通道——黑暗，但能躲开所有人",
+      "jump_2":    "choice_tunnel",
+      "set_key_2": "path",
+      "set_val_2": "tunnel"
+    }},
+
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"主干道有警察。有警察就意味着安全。\n但我现在最怕的……就是警察。"},
+     "next":"choice_main_road"},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"如果我被警察拦下，查出我随身带着催债的BB机信息……麻烦就大了。"}},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"（他停下脚步，转向了右边那条黑暗的下坡路。）"}},
+    {"type":"jump",  "args":{"target":"enter_tunnel"}},
+
+    {"type":"bg",    "args":{"file":"bg_tunnel.png"}, "duration":1.5},
+    {"type":"char",  "args":{"name":"leiye","file":"lei_ye_gaze.png","position":"center"},
+     "next":"choice_tunnel"},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"那条地下通道，建于七十年代。防空洞改的。里面总是渗水，没有灯，甚至没有流浪汉愿意睡在那儿。"}},
+    {"type":"jump",  "args":{"target":"into_darkness"}},
+
+    {"type":"bg",    "args":{"file":"bg_tunnel.png"}, "duration":1.5},
+    {"type":"char",  "args":{"name":"leiye","file":"lei_ye_gaze.png","position":"center"},
+     "next":"enter_tunnel"},
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"那条地下通道，建于七十年代。防空洞改的。里面总是渗水，没有灯，甚至没有流浪汉愿意睡在那儿。"}},
+
+    {"type":"text",  "args":{"speaker":"雷业（独白）","content":"穿过去，走十分钟，就是我租的地下室。谁也找不到我。\n\n黑暗……其实比光明更安全，不是吗？"},
+     "next":"into_darkness"},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"一阵阴冷的风从通道口吹来，带来了一股浓烈的铁锈味和霉味。"}},
+    {"type":"text",  "args":{"speaker":"",       "content":"（雷业收起了那把破伞。在真正的黑暗里，伞是多余的。）"}},
+    {"type":"text",  "args":{"speaker":"",       "content":"他深吸一口气。老虎的夜视能力在黑暗中开始起作用。\n\n他走下台阶。\n\n一步。两步。\n\n身影逐渐被那张黑色的巨口吞没。"}},
+    {"type":"text",  "args":{"speaker":"",       "content":"嗒……\n\n嗒……\n\n嗒……\n\n皮鞋踩在满是积水和青苔的台阶上。"}},
+    {"type":"text",  "args":{"speaker":"",       "content":"他以为自己走进了避难所。\n\n但他不知道，在通道的另一头——\n\n死神，已经开始发牌了。"}},
+
+    {"type":"fg",    "args":{"file":"clear"}},
+    {"type":"bg",    "args":{"file":"bg_tunnel.png"}, "duration":2.5},
+    {"type":"char",  "args":{"name":"leiye","file":"lei_ye_gaze.png","position":"center"}},
+
+    {"type":"text",  "args":{"speaker":"",       "content":"【画面渐黑】"}},
+    {"type":"text",  "args":{"speaker":"",       "content":"═══════════════════════════════\n   第一章：下沉（Part 1） 完\n═══════════════════════════════\n\n未完待续……"}}
+  ]
+}

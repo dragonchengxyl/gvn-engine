@@ -15,7 +15,7 @@ import (
 
 func main() {
 	headless := flag.Bool("headless", false, "run in headless mode (no window, CI/test use)")
-	scriptPath := flag.String("script", "scripts/demo.json", "script file path (relative to assets/)")
+	scriptPath := flag.String("script", "scripts/chapter1.json", "script file path (relative to assets/)")
 	flag.Parse()
 
 	assetsDir, err := fs.Sub(gvnengine.AssetsFS, "assets")

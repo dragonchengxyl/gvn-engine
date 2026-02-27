@@ -195,6 +195,11 @@ type ActionAdvanceLine struct {
 	newIndex  int
 }
 
+// NewActionAdvanceLine creates an ActionAdvanceLine with the given target index.
+func NewActionAdvanceLine(newIndex int) *ActionAdvanceLine {
+	return &ActionAdvanceLine{newIndex: newIndex}
+}
+
 func (a *ActionAdvanceLine) Apply(s *GameState) error {
 	a.prevIndex = s.LineIndex
 	s.LineIndex = a.newIndex
